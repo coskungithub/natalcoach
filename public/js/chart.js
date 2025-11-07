@@ -85,7 +85,7 @@ class NatalChart {
         this.drawPlanets();
     }
 
-    // 1. OUTER ZODIAC RING - Static reference frame
+    // 1. OUTER ZODIAC RING - Rotated so ASC is at 9 o'clock (west/left)
     drawOuterZodiacRing() {
         // Draw outer and inner circles for zodiac ring
         this.ctx.strokeStyle = '#000000';
@@ -102,17 +102,25 @@ class NatalChart {
         this.ctx.arc(this.centerX, this.centerY, this.radii.zodiacInner, 0, 2 * Math.PI);
         this.ctx.stroke();
 
+        // ASC degree (Ascendant position in zodiac)
+        const ascDegree = this.data.ascendant.degree;
+
         // Draw 12 equal sectors for zodiac signs
-        // Aries starts at 9 o'clock (270° in standard orientation, counter-clockwise)
+        // ASC will be at 9 o'clock (180° canvas angle)
+        // Zodiac rotates so ASC is always on the left
         const sectorAngle = 30; // 360° / 12 = 30° per sign
 
         for (let i = 0; i < 12; i++) {
             const sign = this.zodiacSigns[i];
 
-            // Calculate angles (starting from Aries at 9 o'clock, going counter-clockwise)
-            // In canvas: 0° is at 3 o'clock, we want Aries at 9 o'clock (180°)
-            const startAngle = this.degreeToRadian(180 - (i * sectorAngle));
-            const endAngle = this.degreeToRadian(180 - ((i + 1) * sectorAngle));
+            // Zodiac degree for this sign (Aries=0°, Taurus=30°, etc.)
+            const signStartDegree = i * sectorAngle;
+            const signEndDegree = (i + 1) * sectorAngle;
+
+            // Calculate canvas angles (ASC at 180° = 9 o'clock)
+            // Formula: canvasAngle = 180° - (zodiacDegree - ascDegree)
+            const startAngle = this.degreeToRadian(180 - (signStartDegree - ascDegree));
+            const endAngle = this.degreeToRadian(180 - (signEndDegree - ascDegree));
 
             // Draw sector dividing lines
             this.ctx.strokeStyle = '#000000';
@@ -142,14 +150,15 @@ class NatalChart {
         }
     }
 
-    // 2. DEGREE SCALE - Precise ruler around the zodiac ring
+    // 2. DEGREE SCALE - Precise ruler around the zodiac ring (rotated with ASC)
     drawDegreeScale() {
         // Draw degree markers from 0° to 360°
         // Major ticks every 10°, minor ticks every 1°
+        const ascDegree = this.data.ascendant.degree;
 
         for (let deg = 0; deg < 360; deg++) {
-            // Convert to canvas angle (accounting for Aries at 9 o'clock)
-            const angle = this.degreeToRadian(180 - deg);
+            // Convert to canvas angle (ASC at 180° = 9 o'clock)
+            const angle = this.degreeToRadian(180 - (deg - ascDegree));
 
             let tickLength;
             let lineWidth;
@@ -198,15 +207,14 @@ class NatalChart {
         }
     }
 
-    // 3. INNER HOUSE GRID - Dynamic house structure
+    // 3. INNER HOUSE GRID - Dynamic house structure (rotated with ASC)
     drawInnerHouseGrid() {
-        const ascendant = this.data.ascendant.degree;
+        const ascDegree = this.data.ascendant.degree;
 
         // Draw house cusp lines
         this.data.houses.forEach((houseDegree, index) => {
-            // Calculate angle relative to Aries at 9 o'clock position
-            const houseAngleFromAries = houseDegree;
-            const canvasAngle = this.degreeToRadian(180 - houseAngleFromAries);
+            // Calculate canvas angle (ASC at 180° = 9 o'clock)
+            const canvasAngle = this.degreeToRadian(180 - (houseDegree - ascDegree));
 
             // Determine if this is a main angle (ASC, DSC, MC, IC)
             // Houses: 1=ASC, 4=IC, 7=DSC, 10=MC
@@ -292,8 +300,9 @@ class NatalChart {
         this.ctx.setLineDash([]);
     }
 
-    // 4. PLANETS - Place planets in their zones
+    // 4. PLANETS - Place planets in their zones (rotated with ASC)
     drawPlanets() {
+        const ascDegree = this.data.ascendant.degree;
         const planets = [];
 
         // Collect planet data
@@ -312,8 +321,8 @@ class NatalChart {
 
         // Draw each planet
         adjustedPlanets.forEach(planet => {
-            // Convert planet longitude to canvas angle
-            const canvasAngle = this.degreeToRadian(180 - planet.displayLongitude);
+            // Convert planet longitude to canvas angle (ASC at 180° = 9 o'clock)
+            const canvasAngle = this.degreeToRadian(180 - (planet.displayLongitude - ascDegree));
 
             // Position in planet zone
             const planetRadius = (this.radii.planetZoneOuter + this.radii.planetZoneInner) / 2;
@@ -329,7 +338,7 @@ class NatalChart {
 
             // Draw line to actual position if adjusted
             if (planet.displayLongitude !== planet.longitude) {
-                const realAngle = this.degreeToRadian(180 - planet.longitude);
+                const realAngle = this.degreeToRadian(180 - (planet.longitude - ascDegree));
                 const realX = this.centerX + Math.cos(realAngle) * this.radii.planetZoneInner;
                 const realY = this.centerY + Math.sin(realAngle) * this.radii.planetZoneInner;
 
@@ -404,9 +413,11 @@ class NatalChart {
 
     // Draw a single aspect line
     drawAspectLine(long1, long2, aspect) {
-        // Convert longitudes to canvas angles
-        const angle1 = this.degreeToRadian(180 - long1);
-        const angle2 = this.degreeToRadian(180 - long2);
+        const ascDegree = this.data.ascendant.degree;
+
+        // Convert longitudes to canvas angles (ASC at 180° = 9 o'clock)
+        const angle1 = this.degreeToRadian(180 - (long1 - ascDegree));
+        const angle2 = this.degreeToRadian(180 - (long2 - ascDegree));
 
         // Calculate points on the aspect zone circle
         const x1 = this.centerX + Math.cos(angle1) * this.radii.aspectZone;

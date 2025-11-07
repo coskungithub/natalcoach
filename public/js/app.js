@@ -17,6 +17,9 @@ document.getElementById('natalForm').addEventListener('submit', async (e) => {
     hideResults();
 
     try {
+        // Kullanıcının saat dilimi offset'ini al (dakika cinsinden)
+        const timezoneOffset = new Date().getTimezoneOffset();
+
         // API çağrısı
         const response = await fetch('http://localhost:3000/api/natal-chart', {
             method: 'POST',
@@ -30,7 +33,8 @@ document.getElementById('natalForm').addEventListener('submit', async (e) => {
                 hour,
                 minute,
                 latitude,
-                longitude
+                longitude,
+                timezoneOffset
             })
         });
 

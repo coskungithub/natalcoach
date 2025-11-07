@@ -36,9 +36,12 @@ const planetNames = {
     11: 'Kuzey Düğüm'
 };
 
-// Tarih ve saati Julian Date'e çevir
-function getJulianDate(year, month, day, hour, minute) {
-    const decimal_time = hour + minute / 60.0;
+// Tarih ve saati Julian Date'e çevir (timezone offset ile)
+function getJulianDate(year, month, day, hour, minute, timezoneOffset = 0) {
+    // timezoneOffset: UTC'den fark (dakika cinsinden, örn: UTC+3 için -180)
+    // Yerel saati UTC'ye çevir
+    const utcHour = hour - (timezoneOffset / 60);
+    const decimal_time = utcHour + minute / 60.0;
     const result = swisseph.swe_julday(
         year,
         month,
@@ -103,7 +106,7 @@ function calculateHouses(julianDate, latitude, longitude) {
 // Natal harita hesaplama
 app.post('/api/natal-chart', (req, res) => {
     try {
-        const { year, month, day, hour, minute, latitude, longitude } = req.body;
+        const { year, month, day, hour, minute, latitude, longitude, timezoneOffset } = req.body;
 
         // Validasyon
         if (!year || !month || !day || hour === undefined || minute === undefined || !latitude || !longitude) {
@@ -112,8 +115,8 @@ app.post('/api/natal-chart', (req, res) => {
             });
         }
 
-        // Julian Date hesapla
-        const julianDate = getJulianDate(year, month, day, hour, minute);
+        // Julian Date hesapla (timezone offset ile)
+        const julianDate = getJulianDate(year, month, day, hour, minute, timezoneOffset || 0);
 
         // Gezegen pozisyonlarını hesapla
         const planets = {};
@@ -145,7 +148,8 @@ app.post('/api/natal-chart', (req, res) => {
                     hour,
                     minute,
                     latitude,
-                    longitude
+                    longitude,
+                    timezoneOffset: timezoneOffset || 0
                 },
                 julianDate,
                 planets,
