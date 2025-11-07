@@ -59,19 +59,27 @@ function displayResults(data) {
     // Natal Chart çiz
     drawNatalChart(data);
 
+    // Burç sembolleri
+    const zodiacSymbols = {
+        'Koç': '♈', 'Boğa': '♉', 'İkizler': '♊', 'Yengeç': '♋',
+        'Aslan': '♌', 'Başak': '♍', 'Terazi': '♎', 'Akrep': '♏',
+        'Yay': '♐', 'Oğlak': '♑', 'Kova': '♒', 'Balık': '♓'
+    };
+
+    // Gezegen sembolleri
+    const planetSymbols = {
+        'Güneş': '☉', 'Ay': '☽', 'Merkür': '☿', 'Venüs': '♀',
+        'Mars': '♂', 'Jüpiter': '♃', 'Satürn': '♄', 'Uranüs': '♅',
+        'Neptün': '♆', 'Plüton': '♇', 'Kuzey Düğüm': '☊'
+    };
+
     // Yükselen burç
     const ascendantDiv = document.getElementById('ascendant');
-    ascendantDiv.innerHTML = `
-        <strong>${data.ascendant.sign}</strong><br>
-        ${formatDegree(data.ascendant.degreeInSign)}
-    `;
+    ascendantDiv.textContent = `${zodiacSymbols[data.ascendant.sign] || ''} ${formatDMS(data.ascendant.degreeInSign)}`;
 
     // MC
     const mcDiv = document.getElementById('mc');
-    mcDiv.innerHTML = `
-        <strong>${data.mc.sign}</strong><br>
-        ${formatDegree(data.mc.degreeInSign)}
-    `;
+    mcDiv.textContent = `${zodiacSymbols[data.mc.sign] || ''} ${formatDMS(data.mc.degreeInSign)}`;
 
     // Gezegenler
     const planetsDiv = document.getElementById('planets');
@@ -80,47 +88,46 @@ function displayResults(data) {
     for (const [planetName, position] of Object.entries(data.planets)) {
         if (position.error) continue;
 
-        const planetCard = document.createElement('div');
-        planetCard.className = 'planet-card';
-        planetCard.innerHTML = `
-            <div class="planet-name">${planetName}</div>
-            <div class="planet-info">
-                ${position.sign}<br>
-                ${formatDegree(position.degree)}
-            </div>
-        `;
-        planetsDiv.appendChild(planetCard);
+        const dataItem = document.createElement('div');
+        dataItem.className = 'data-item';
+
+        const planetSymbol = planetSymbols[planetName] || '?';
+        const signSymbol = zodiacSymbols[position.sign] || '';
+        const dms = formatDMS(position.degree);
+
+        dataItem.textContent = `${planetSymbol} ${signSymbol} ${dms}`;
+        planetsDiv.appendChild(dataItem);
     }
 
     // Evler
     const housesDiv = document.getElementById('houses');
     housesDiv.innerHTML = '';
 
+    const signs = ['Koç', 'Boğa', 'İkizler', 'Yengeç', 'Aslan', 'Başak', 'Terazi', 'Akrep', 'Yay', 'Oğlak', 'Kova', 'Balık'];
+
     data.houses.forEach((houseDegree, index) => {
-        const houseCard = document.createElement('div');
-        houseCard.className = 'house-card';
+        const dataItem = document.createElement('div');
+        dataItem.className = 'data-item';
 
         const signIndex = Math.floor(houseDegree / 30);
         const degreeInSign = houseDegree % 30;
-        const signs = ['Koç', 'Boğa', 'İkizler', 'Yengeç', 'Aslan', 'Başak', 'Terazi', 'Akrep', 'Yay', 'Oğlak', 'Kova', 'Balık'];
+        const signSymbol = zodiacSymbols[signs[signIndex]] || '';
+        const dms = formatDMS(degreeInSign);
 
-        houseCard.innerHTML = `
-            <div class="house-number">Ev ${index + 1}</div>
-            <div class="house-degree">
-                ${signs[signIndex]}<br>
-                ${formatDegree(degreeInSign)}
-            </div>
-        `;
-        housesDiv.appendChild(houseCard);
+        dataItem.textContent = `${index + 1}. Ev: ${signSymbol} ${dms}`;
+        housesDiv.appendChild(dataItem);
     });
 
     showResults();
 }
 
-function formatDegree(degree) {
+// Derece/Dakika/Saniye formatı
+function formatDMS(degree) {
     const deg = Math.floor(degree);
-    const min = Math.floor((degree - deg) * 60);
-    return `${deg}° ${min}'`;
+    const minFloat = (degree - deg) * 60;
+    const min = Math.floor(minFloat);
+    const sec = Math.floor((minFloat - min) * 60);
+    return `${deg}°${min.toString().padStart(2, '0')}'${sec.toString().padStart(2, '0')}"`;
 }
 
 function showLoading() {

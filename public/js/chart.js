@@ -5,9 +5,9 @@ class NatalChart {
         this.ctx = this.canvas.getContext('2d');
         this.data = data;
 
-        // Canvas dimensions - high resolution for crisp lines
-        this.width = 1000;
-        this.height = 1000;
+        // Canvas dimensions - optimized for layout
+        this.width = 700;
+        this.height = 700;
         this.canvas.width = this.width;
         this.canvas.height = this.height;
 
@@ -17,14 +17,14 @@ class NatalChart {
 
         // Radius definitions for different zones
         this.radii = {
-            outer: 480,              // Outer boundary
-            zodiacOuter: 460,        // Outer edge of zodiac ring
-            zodiacInner: 380,        // Inner edge of zodiac ring
-            degreeScale: 370,        // Degree scale position
-            planetZoneOuter: 360,    // Outer edge of planet placement zone
-            planetZoneInner: 320,    // Inner edge of planet placement zone
-            houseCusp: 300,          // Where house lines end
-            aspectZone: 280          // Aspect line connection radius
+            outer: 336,              // Outer boundary
+            zodiacOuter: 322,        // Outer edge of zodiac ring
+            zodiacInner: 266,        // Inner edge of zodiac ring
+            degreeScale: 259,        // Degree scale position
+            planetZoneOuter: 252,    // Outer edge of planet placement zone
+            planetZoneInner: 224,    // Inner edge of planet placement zone
+            houseCusp: 210,          // Where house lines end
+            aspectZone: 196          // Aspect line connection radius
         };
 
         // Zodiac signs in order (starting from Aries)

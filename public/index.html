@@ -49,33 +49,39 @@
 
             <!-- Sonuç Bölümü -->
             <div id="results" class="results-section" style="display: none;">
-                <h2>Natal Harita Sonuçları</h2>
+                <h2>Natal Harita</h2>
 
-                <!-- Natal Chart Wheel -->
-                <div id="chartContainer" class="chart-container"></div>
+                <!-- Chart ve Bilgiler Yan Yana -->
+                <div class="chart-and-data">
+                    <!-- Sol: Natal Chart Wheel -->
+                    <div id="chartContainer" class="chart-container"></div>
 
-                <!-- Yükselen Burç ve MC -->
-                <div class="important-points">
-                    <div class="point-card">
-                        <h3>⬆️ Yükselen Burç (Ascendant)</h3>
-                        <div id="ascendant" class="value"></div>
+                    <!-- Sağ: Gezegen ve Ev Bilgileri -->
+                    <div class="data-panel">
+                        <!-- Yükselen ve MC -->
+                        <div class="angles-section">
+                            <div class="angle-item">
+                                <span class="angle-label">ASC</span>
+                                <span id="ascendant" class="angle-value"></span>
+                            </div>
+                            <div class="angle-item">
+                                <span class="angle-label">MC</span>
+                                <span id="mc" class="angle-value"></span>
+                            </div>
+                        </div>
+
+                        <!-- Gezegen Pozisyonları -->
+                        <div class="data-section">
+                            <h3>Gezegenler</h3>
+                            <div id="planets" class="data-list"></div>
+                        </div>
+
+                        <!-- Evler -->
+                        <div class="data-section">
+                            <h3>Evler</h3>
+                            <div id="houses" class="data-list"></div>
+                        </div>
                     </div>
-                    <div class="point-card">
-                        <h3>⭐ Orta Göğü (MC - Midheaven)</h3>
-                        <div id="mc" class="value"></div>
-                    </div>
-                </div>
-
-                <!-- Gezegen Pozisyonları -->
-                <div class="planets-section">
-                    <h3>🪐 Gezegen Pozisyonları</h3>
-                    <div id="planets" class="planets-grid"></div>
-                </div>
-
-                <!-- Evler -->
-                <div class="houses-section">
-                    <h3>🏠 Ev Başlangıçları (Placidus Sistemi)</h3>
-                    <div id="houses" class="houses-grid"></div>
                 </div>
             </div>
 
