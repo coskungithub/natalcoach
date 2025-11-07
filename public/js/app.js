@@ -20,8 +20,21 @@ document.getElementById('natalForm').addEventListener('submit', async (e) => {
     hideResults();
 
     try {
-        // Kullanıcının saat dilimi offset'ini al (dakika cinsinden)
-        const timezoneOffset = new Date().getTimezoneOffset();
+        // Timezone seçimini al
+        const timezoneSelect = document.getElementById('timezone').value;
+        let timezoneOffset;
+
+        if (timezoneSelect === 'auto') {
+            // Otomatik: DOĞUM TARİHİ için offset hesapla
+            // Bu, daylight saving time gibi tarihsel farklılıkları dikkate alır
+            const birthDate = new Date(year, month - 1, day, hour, minute);
+            timezoneOffset = birthDate.getTimezoneOffset();
+            console.log('Otomatik timezone offset (doğum tarihi için):', timezoneOffset, 'dakika');
+        } else {
+            // Manuel seçim
+            timezoneOffset = parseInt(timezoneSelect);
+            console.log('Manuel timezone offset:', timezoneOffset, 'dakika');
+        }
 
         // API çağrısı
         const response = await fetch('http://localhost:3000/api/natal-chart', {

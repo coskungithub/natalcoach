@@ -38,11 +38,28 @@
                         <input type="number" id="longitude" step="0.0001" min="-180" max="180" placeholder="Örn: 28.9784" required>
                     </div>
 
+                    <div class="form-group">
+                        <label for="timezone">Saat Dilimi (Timezone):</label>
+                        <select id="timezone" required>
+                            <option value="-180">UTC+3 (Türkiye - Standart)</option>
+                            <option value="-240">UTC+4 (Türkiye - Yaz Saati Uygulandıysa)</option>
+                            <option value="-120">UTC+2 (Doğu Avrupa)</option>
+                            <option value="0">UTC+0 (Londra)</option>
+                            <option value="60">UTC-1</option>
+                            <option value="300">UTC-5 (New York - Standart)</option>
+                            <option value="240">UTC-4 (New York - Yaz Saati)</option>
+                            <option value="480">UTC-8 (Los Angeles - Standart)</option>
+                            <option value="420">UTC-7 (Los Angeles - Yaz Saati)</option>
+                            <option value="auto">Otomatik (Tarayıcı Tahmini)</option>
+                        </select>
+                    </div>
+
                     <div class="form-hint">
                         <p><strong>💡 Örnek Şehir Koordinatları:</strong></p>
                         <p>İstanbul: 41.0082, 28.9784 | Ankara: 39.9334, 32.8597</p>
                         <p>İzmir: 38.4237, 27.1428 | New York: 40.7128, -74.0060</p>
-                        <p>📍 Diğer şehirler için: <a href="https://www.latlong.net/" target="_blank">latlong.net</a></p>
+                        <p><strong>⏰ Önemli:</strong> Türkiye'de 1996 öncesi yaz saati farklıydı. Doğum tarihinize göre doğru timezone'u seçin.</p>
+                        <p>📍 Koordinatlar: <a href="https://www.latlong.net/" target="_blank">latlong.net</a> | Timezone: <a href="https://www.timeanddate.com/time/zone/" target="_blank">timeanddate.com</a></p>
                     </div>
 
                     <button type="submit" class="btn-calculate">Haritayı Hesapla</button>
