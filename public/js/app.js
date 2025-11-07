@@ -52,6 +52,9 @@ document.getElementById('natalForm').addEventListener('submit', async (e) => {
 });
 
 function displayResults(data) {
+    // Natal Chart çiz
+    drawNatalChart(data);
+
     // Yükselen burç
     const ascendantDiv = document.getElementById('ascendant');
     ascendantDiv.innerHTML = `

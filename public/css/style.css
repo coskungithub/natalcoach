@@ -221,6 +221,22 @@ header p {
     font-size: 0.9em;
 }
 
+.chart-container {
+    text-align: center;
+    margin: 30px auto;
+    padding: 20px;
+    background: #f8f9ff;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.chart-container canvas {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    background: white;
+}
+
 .error-section {
     background: #ffebee;
     color: #c62828;
@@ -273,5 +289,14 @@ header p {
 
     .important-points {
         grid-template-columns: 1fr;
+    }
+
+    .chart-container {
+        padding: 10px;
+    }
+
+    .chart-container canvas {
+        width: 100% !important;
+        height: auto !important;
     }
 }
