@@ -1,50 +1,49 @@
-// Chart çizim sınıfı
+// Professional Natal Chart Class - Black & White Line Art
 class NatalChart {
     constructor(canvasId, data) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext('2d');
         this.data = data;
 
-        // Canvas boyutları
-        this.width = 800;
-        this.height = 800;
+        // Canvas dimensions - high resolution for crisp lines
+        this.width = 1000;
+        this.height = 1000;
         this.canvas.width = this.width;
         this.canvas.height = this.height;
 
-        // Merkez ve yarıçaplar
+        // Center point
         this.centerX = this.width / 2;
         this.centerY = this.height / 2;
-        this.outerRadius = 380;
-        this.zodiacRadius = 340;
-        this.houseRadius = 280;
-        this.planetRadius = 240;
-        this.aspectRadius = 180;
 
-        // Renkler
-        this.colors = {
-            fire: '#FF6B6B',      // Ateş: Koç, Aslan, Yay
-            earth: '#4ECDC4',     // Toprak: Boğa, Başak, Oğlak
-            air: '#FFE66D',       // Hava: İkizler, Terazi, Kova
-            water: '#95E1D3'      // Su: Yengeç, Akrep, Balık
+        // Radius definitions for different zones
+        this.radii = {
+            outer: 480,              // Outer boundary
+            zodiacOuter: 460,        // Outer edge of zodiac ring
+            zodiacInner: 380,        // Inner edge of zodiac ring
+            degreeScale: 370,        // Degree scale position
+            planetZoneOuter: 360,    // Outer edge of planet placement zone
+            planetZoneInner: 320,    // Inner edge of planet placement zone
+            houseCusp: 300,          // Where house lines end
+            aspectZone: 280          // Aspect line connection radius
         };
 
-        // Burç bilgileri
+        // Zodiac signs in order (starting from Aries)
         this.zodiacSigns = [
-            { name: 'Koç', symbol: '♈', element: 'fire' },
-            { name: 'Boğa', symbol: '♉', element: 'earth' },
-            { name: 'İkizler', symbol: '♊', element: 'air' },
-            { name: 'Yengeç', symbol: '♋', element: 'water' },
-            { name: 'Aslan', symbol: '♌', element: 'fire' },
-            { name: 'Başak', symbol: '♍', element: 'earth' },
-            { name: 'Terazi', symbol: '♎', element: 'air' },
-            { name: 'Akrep', symbol: '♏', element: 'water' },
-            { name: 'Yay', symbol: '♐', element: 'fire' },
-            { name: 'Oğlak', symbol: '♑', element: 'earth' },
-            { name: 'Kova', symbol: '♒', element: 'air' },
-            { name: 'Balık', symbol: '♓', element: 'water' }
+            { name: 'Aries', symbol: '♈' },
+            { name: 'Taurus', symbol: '♉' },
+            { name: 'Gemini', symbol: '♊' },
+            { name: 'Cancer', symbol: '♋' },
+            { name: 'Leo', symbol: '♌' },
+            { name: 'Virgo', symbol: '♍' },
+            { name: 'Libra', symbol: '♎' },
+            { name: 'Scorpio', symbol: '♏' },
+            { name: 'Sagittarius', symbol: '♐' },
+            { name: 'Capricorn', symbol: '♑' },
+            { name: 'Aquarius', symbol: '♒' },
+            { name: 'Pisces', symbol: '♓' }
         ];
 
-        // Gezegen sembolleri
+        // Planet symbols
         this.planetSymbols = {
             'Güneş': '☉',
             'Ay': '☽',
@@ -59,129 +58,245 @@ class NatalChart {
             'Kuzey Düğüm': '☊'
         };
 
-        // Aspekt kuralları (derece toleransı ile)
+        // Aspect definitions
         this.aspects = [
-            { name: 'Conjunction', angle: 0, orb: 8, color: '#FFD700', symbol: '☌' },
-            { name: 'Opposition', angle: 180, orb: 8, color: '#FF4444', symbol: '☍' },
-            { name: 'Trine', angle: 120, orb: 8, color: '#44FF44', symbol: '△' },
-            { name: 'Square', angle: 90, orb: 8, color: '#FF8844', symbol: '□' },
-            { name: 'Sextile', angle: 60, orb: 6, color: '#4444FF', symbol: '⚹' }
+            { name: 'Conjunction', angle: 0, orb: 8, lineWidth: 2, lineDash: [] },
+            { name: 'Opposition', angle: 180, orb: 8, lineWidth: 2, lineDash: [] },
+            { name: 'Trine', angle: 120, orb: 8, lineWidth: 1.5, lineDash: [] },
+            { name: 'Square', angle: 90, orb: 8, lineWidth: 1.5, lineDash: [5, 5] },
+            { name: 'Sextile', angle: 60, orb: 6, lineWidth: 1, lineDash: [3, 3] }
         ];
     }
 
-    // Ana çizim fonksiyonu
+    // Main drawing function
     draw() {
+        // Clear canvas
         this.ctx.clearRect(0, 0, this.width, this.height);
 
-        // Arka plan
-        this.drawBackground();
-
-        // Burç halkaları
-        this.drawZodiacWheel();
-
-        // Ev çizgileri
-        this.drawHouses();
-
-        // Aspektler (gezegenlerden önce çizilmeli)
-        this.drawAspects();
-
-        // Gezegenler
-        this.drawPlanets();
-
-        // Yükselen ve MC işaretleri
-        this.drawAngles();
-
-        // Derece işaretleri
-        this.drawDegreeMarkers();
-    }
-
-    // Arka plan
-    drawBackground() {
-        // Dış çember (beyaz)
+        // Set white background
         this.ctx.fillStyle = '#FFFFFF';
-        this.ctx.beginPath();
-        this.ctx.arc(this.centerX, this.centerY, this.outerRadius, 0, 2 * Math.PI);
-        this.ctx.fill();
+        this.ctx.fillRect(0, 0, this.width, this.height);
 
-        // Sınır çizgisi
-        this.ctx.strokeStyle = '#333';
-        this.ctx.lineWidth = 2;
-        this.ctx.stroke();
+        // Draw in order (back to front)
+        this.drawOuterZodiacRing();
+        this.drawDegreeScale();
+        this.drawInnerHouseGrid();
+        this.drawAspects();
+        this.drawPlanets();
     }
 
-    // Burç tekerleği
-    drawZodiacWheel() {
-        const startAngle = this.data.ascendant.degree;
+    // 1. OUTER ZODIAC RING - Static reference frame
+    drawOuterZodiacRing() {
+        // Draw outer and inner circles for zodiac ring
+        this.ctx.strokeStyle = '#000000';
+        this.ctx.lineWidth = 3;
+
+        // Outer boundary
+        this.ctx.beginPath();
+        this.ctx.arc(this.centerX, this.centerY, this.radii.zodiacOuter, 0, 2 * Math.PI);
+        this.ctx.stroke();
+
+        // Inner boundary (thick separator)
+        this.ctx.lineWidth = 3;
+        this.ctx.beginPath();
+        this.ctx.arc(this.centerX, this.centerY, this.radii.zodiacInner, 0, 2 * Math.PI);
+        this.ctx.stroke();
+
+        // Draw 12 equal sectors for zodiac signs
+        // Aries starts at 9 o'clock (270° in standard orientation, counter-clockwise)
+        const sectorAngle = 30; // 360° / 12 = 30° per sign
 
         for (let i = 0; i < 12; i++) {
             const sign = this.zodiacSigns[i];
-            const angle1 = this.degreeToRadian(startAngle - (i * 30));
-            const angle2 = this.degreeToRadian(startAngle - ((i + 1) * 30));
 
-            // Burç dilimi
-            this.ctx.fillStyle = this.colors[sign.element] + '33'; // Şeffaf
-            this.ctx.beginPath();
-            this.ctx.arc(this.centerX, this.centerY, this.zodiacRadius, angle1, angle2, true);
-            this.ctx.lineTo(this.centerX, this.centerY);
-            this.ctx.closePath();
-            this.ctx.fill();
+            // Calculate angles (starting from Aries at 9 o'clock, going counter-clockwise)
+            // In canvas: 0° is at 3 o'clock, we want Aries at 9 o'clock (180°)
+            const startAngle = this.degreeToRadian(180 - (i * sectorAngle));
+            const endAngle = this.degreeToRadian(180 - ((i + 1) * sectorAngle));
 
-            // Burç sınır çizgileri
-            this.ctx.strokeStyle = this.colors[sign.element];
+            // Draw sector dividing lines
+            this.ctx.strokeStyle = '#000000';
             this.ctx.lineWidth = 1;
+            this.ctx.beginPath();
+            this.ctx.moveTo(
+                this.centerX + Math.cos(startAngle) * this.radii.zodiacInner,
+                this.centerY + Math.sin(startAngle) * this.radii.zodiacInner
+            );
+            this.ctx.lineTo(
+                this.centerX + Math.cos(startAngle) * this.radii.zodiacOuter,
+                this.centerY + Math.sin(startAngle) * this.radii.zodiacOuter
+            );
             this.ctx.stroke();
 
-            // Burç sembolü
-            const symbolAngle = angle1 - (Math.PI / 12); // Ortala
-            const symbolX = this.centerX + Math.cos(symbolAngle) * (this.zodiacRadius - 25);
-            const symbolY = this.centerY - Math.sin(symbolAngle) * (this.zodiacRadius - 25);
+            // Draw zodiac symbol in the center of each sector
+            const midAngle = startAngle - this.degreeToRadian(sectorAngle / 2);
+            const symbolRadius = (this.radii.zodiacOuter + this.radii.zodiacInner) / 2;
+            const symbolX = this.centerX + Math.cos(midAngle) * symbolRadius;
+            const symbolY = this.centerY + Math.sin(midAngle) * symbolRadius;
 
-            this.ctx.fillStyle = this.colors[sign.element];
-            this.ctx.font = 'bold 24px Arial';
+            this.ctx.fillStyle = '#000000';
+            this.ctx.font = 'bold 28px Arial';
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(sign.symbol, symbolX, symbolY);
         }
     }
 
-    // Evler
-    drawHouses() {
+    // 2. DEGREE SCALE - Precise ruler around the zodiac ring
+    drawDegreeScale() {
+        // Draw degree markers from 0° to 360°
+        // Major ticks every 10°, minor ticks every 1°
+
+        for (let deg = 0; deg < 360; deg++) {
+            // Convert to canvas angle (accounting for Aries at 9 o'clock)
+            const angle = this.degreeToRadian(180 - deg);
+
+            let tickLength;
+            let lineWidth;
+
+            if (deg % 10 === 0) {
+                // Major tick every 10 degrees
+                tickLength = 12;
+                lineWidth = 2;
+            } else if (deg % 5 === 0) {
+                // Medium tick every 5 degrees
+                tickLength = 8;
+                lineWidth = 1.5;
+            } else {
+                // Minor tick every degree
+                tickLength = 4;
+                lineWidth = 1;
+            }
+
+            // Inner point
+            const innerX = this.centerX + Math.cos(angle) * this.radii.zodiacInner;
+            const innerY = this.centerY + Math.sin(angle) * this.radii.zodiacInner;
+
+            // Outer point
+            const outerX = this.centerX + Math.cos(angle) * (this.radii.zodiacInner - tickLength);
+            const outerY = this.centerY + Math.sin(angle) * (this.radii.zodiacInner - tickLength);
+
+            this.ctx.strokeStyle = '#000000';
+            this.ctx.lineWidth = lineWidth;
+            this.ctx.beginPath();
+            this.ctx.moveTo(innerX, innerY);
+            this.ctx.lineTo(outerX, outerY);
+            this.ctx.stroke();
+
+            // Add degree numbers every 30 degrees
+            if (deg % 30 === 0) {
+                const labelRadius = this.radii.zodiacInner - 25;
+                const labelX = this.centerX + Math.cos(angle) * labelRadius;
+                const labelY = this.centerY + Math.sin(angle) * labelRadius;
+
+                this.ctx.fillStyle = '#000000';
+                this.ctx.font = 'bold 12px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(deg + '°', labelX, labelY);
+            }
+        }
+    }
+
+    // 3. INNER HOUSE GRID - Dynamic house structure
+    drawInnerHouseGrid() {
         const ascendant = this.data.ascendant.degree;
 
+        // Draw house cusp lines
         this.data.houses.forEach((houseDegree, index) => {
-            // Ev çizgisi
-            const angle = this.degreeToRadian(ascendant - houseDegree);
+            // Calculate angle relative to Aries at 9 o'clock position
+            const houseAngleFromAries = houseDegree;
+            const canvasAngle = this.degreeToRadian(180 - houseAngleFromAries);
 
-            this.ctx.strokeStyle = '#666';
-            this.ctx.lineWidth = index % 3 === 0 ? 3 : 1; // Ana açılar kalın
+            // Determine if this is a main angle (ASC, DSC, MC, IC)
+            // Houses: 1=ASC, 4=IC, 7=DSC, 10=MC
+            const isMainAngle = (index === 0 || index === 3 || index === 6 || index === 9);
+
+            // Set line style
+            this.ctx.strokeStyle = '#000000';
+            this.ctx.lineWidth = isMainAngle ? 3 : 1;
+
+            // Draw house cusp line from center to house cusp radius
             this.ctx.beginPath();
-            this.ctx.moveTo(this.centerX, this.centerY);
+            this.ctx.moveTo(
+                this.centerX + Math.cos(canvasAngle) * this.radii.aspectZone,
+                this.centerY + Math.sin(canvasAngle) * this.radii.aspectZone
+            );
             this.ctx.lineTo(
-                this.centerX + Math.cos(angle) * this.houseRadius,
-                this.centerY - Math.sin(angle) * this.houseRadius
+                this.centerX + Math.cos(canvasAngle) * this.radii.houseCusp,
+                this.centerY + Math.sin(canvasAngle) * this.radii.houseCusp
             );
             this.ctx.stroke();
 
-            // Ev numarası
-            const nextHouse = this.data.houses[(index + 1) % 12];
-            const midAngle = this.degreeToRadian(ascendant - ((houseDegree + nextHouse) / 2));
-            const numX = this.centerX + Math.cos(midAngle) * (this.houseRadius - 40);
-            const numY = this.centerY - Math.sin(midAngle) * (this.houseRadius - 40);
+            // Draw angle marker labels for main angles
+            if (isMainAngle) {
+                let label = '';
+                if (index === 0) label = 'ASC';
+                else if (index === 3) label = 'IC';
+                else if (index === 6) label = 'DSC';
+                else if (index === 9) label = 'MC';
 
-            this.ctx.fillStyle = '#666';
-            this.ctx.font = 'bold 16px Arial';
+                const labelRadius = this.radii.houseCusp + 25;
+                const labelX = this.centerX + Math.cos(canvasAngle) * labelRadius;
+                const labelY = this.centerY + Math.sin(canvasAngle) * labelRadius;
+
+                // Draw label with box background
+                this.ctx.fillStyle = '#FFFFFF';
+                this.ctx.fillRect(labelX - 20, labelY - 10, 40, 20);
+
+                this.ctx.strokeStyle = '#000000';
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeRect(labelX - 20, labelY - 10, 40, 20);
+
+                this.ctx.fillStyle = '#000000';
+                this.ctx.font = 'bold 14px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(label, labelX, labelY);
+            }
+
+            // Draw house numbers
+            const nextHouseDegree = this.data.houses[(index + 1) % 12];
+            let midDegree = (houseDegree + nextHouseDegree) / 2;
+
+            // Handle wraparound
+            if (nextHouseDegree < houseDegree) {
+                midDegree = ((houseDegree + nextHouseDegree + 360) / 2) % 360;
+            }
+
+            const midAngle = this.degreeToRadian(180 - midDegree);
+            const numRadius = (this.radii.houseCusp + this.radii.aspectZone) / 2;
+            const numX = this.centerX + Math.cos(midAngle) * numRadius;
+            const numY = this.centerY + Math.sin(midAngle) * numRadius;
+
+            this.ctx.fillStyle = '#000000';
+            this.ctx.font = '16px Arial';
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText((index + 1).toString(), numX, numY);
         });
+
+        // Draw planet placement zone boundaries
+        this.ctx.strokeStyle = '#999999';
+        this.ctx.lineWidth = 1;
+        this.ctx.setLineDash([3, 3]);
+
+        this.ctx.beginPath();
+        this.ctx.arc(this.centerX, this.centerY, this.radii.planetZoneOuter, 0, 2 * Math.PI);
+        this.ctx.stroke();
+
+        this.ctx.beginPath();
+        this.ctx.arc(this.centerX, this.centerY, this.radii.planetZoneInner, 0, 2 * Math.PI);
+        this.ctx.stroke();
+
+        this.ctx.setLineDash([]);
     }
 
-    // Gezegenler
+    // 4. PLANETS - Place planets in their zones
     drawPlanets() {
-        const ascendant = this.data.ascendant.degree;
         const planets = [];
 
-        // Gezegen verilerini topla
+        // Collect planet data
         for (const [name, position] of Object.entries(this.data.planets)) {
             if (!position.longitude) continue;
 
@@ -192,30 +307,34 @@ class NatalChart {
             });
         }
 
-        // Çakışmaları önlemek için pozisyonları ayarla
-        const adjustedPlanets = this.adjustPlanetPositions(planets, ascendant);
+        // Adjust positions to prevent overlap
+        const adjustedPlanets = this.adjustPlanetPositions(planets);
 
-        // Gezegenleri çiz
+        // Draw each planet
         adjustedPlanets.forEach(planet => {
-            const angle = this.degreeToRadian(ascendant - planet.displayLongitude);
-            const x = this.centerX + Math.cos(angle) * this.planetRadius;
-            const y = this.centerY - Math.sin(angle) * this.planetRadius;
+            // Convert planet longitude to canvas angle
+            const canvasAngle = this.degreeToRadian(180 - planet.displayLongitude);
 
-            // Gezegen sembolü
-            this.ctx.fillStyle = this.getPlanetColor(planet.name);
-            this.ctx.font = 'bold 20px Arial';
+            // Position in planet zone
+            const planetRadius = (this.radii.planetZoneOuter + this.radii.planetZoneInner) / 2;
+            const x = this.centerX + Math.cos(canvasAngle) * planetRadius;
+            const y = this.centerY + Math.sin(canvasAngle) * planetRadius;
+
+            // Draw planet symbol
+            this.ctx.fillStyle = '#000000';
+            this.ctx.font = 'bold 24px Arial';
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(planet.symbol, x, y);
 
-            // Gerçek pozisyona çizgi (eğer ayarlandıysa)
+            // Draw line to actual position if adjusted
             if (planet.displayLongitude !== planet.longitude) {
-                const realAngle = this.degreeToRadian(ascendant - planet.longitude);
-                const realX = this.centerX + Math.cos(realAngle) * (this.planetRadius - 30);
-                const realY = this.centerY - Math.sin(realAngle) * (this.planetRadius - 30);
+                const realAngle = this.degreeToRadian(180 - planet.longitude);
+                const realX = this.centerX + Math.cos(realAngle) * this.radii.planetZoneInner;
+                const realY = this.centerY + Math.sin(realAngle) * this.radii.planetZoneInner;
 
-                this.ctx.strokeStyle = '#999';
-                this.ctx.lineWidth = 1;
+                this.ctx.strokeStyle = '#666666';
+                this.ctx.lineWidth = 0.5;
                 this.ctx.setLineDash([2, 2]);
                 this.ctx.beginPath();
                 this.ctx.moveTo(x, y);
@@ -226,65 +345,53 @@ class NatalChart {
         });
     }
 
-    // Gezegen pozisyonlarını ayarla (çakışmaları önle)
-    adjustPlanetPositions(planets, ascendant) {
-        const minDistance = 10; // Minimum derece farkı
+    // Adjust planet positions to prevent overlap
+    adjustPlanetPositions(planets) {
+        const minDistance = 8; // Minimum degrees between planets
         const adjusted = planets.map(p => ({
             ...p,
             displayLongitude: p.longitude
         }));
 
-        // Longitude'a göre sırala
+        // Sort by longitude
         adjusted.sort((a, b) => a.longitude - b.longitude);
 
-        // Çakışmaları kontrol et ve ayarla
+        // Adjust overlapping positions
         for (let i = 0; i < adjusted.length - 1; i++) {
-            const diff = adjusted[i + 1].displayLongitude - adjusted[i].displayLongitude;
+            let diff = adjusted[i + 1].displayLongitude - adjusted[i].displayLongitude;
+
+            // Handle wraparound
+            if (diff < 0) diff += 360;
+
             if (diff < minDistance) {
-                adjusted[i + 1].displayLongitude = adjusted[i].displayLongitude + minDistance;
+                adjusted[i + 1].displayLongitude = (adjusted[i].displayLongitude + minDistance) % 360;
             }
         }
 
         return adjusted;
     }
 
-    // Gezegen rengi
-    getPlanetColor(planetName) {
-        const colors = {
-            'Güneş': '#FFD700',
-            'Ay': '#C0C0C0',
-            'Merkür': '#FFA500',
-            'Venüs': '#FF69B4',
-            'Mars': '#FF0000',
-            'Jüpiter': '#8B4513',
-            'Satürn': '#4B0082',
-            'Uranüs': '#00CED1',
-            'Neptün': '#4169E1',
-            'Plüton': '#8B0000',
-            'Kuzey Düğüm': '#800080'
-        };
-        return colors[planetName] || '#333';
-    }
-
-    // Aspektler
+    // 5. ASPECTS - Draw aspect lines in the center
     drawAspects() {
         const planets = [];
 
+        // Collect planet data
         for (const [name, position] of Object.entries(this.data.planets)) {
             if (!position.longitude) continue;
             planets.push({ name, longitude: position.longitude });
         }
 
-        // Tüm gezegen çiftlerini kontrol et
+        // Check all planet pairs for aspects
         for (let i = 0; i < planets.length; i++) {
             for (let j = i + 1; j < planets.length; j++) {
                 const planet1 = planets[i];
                 const planet2 = planets[j];
 
+                // Calculate angular difference
                 let diff = Math.abs(planet1.longitude - planet2.longitude);
                 if (diff > 180) diff = 360 - diff;
 
-                // Aspekt var mı kontrol et
+                // Check if this matches any aspect
                 for (const aspect of this.aspects) {
                     if (Math.abs(diff - aspect.angle) <= aspect.orb) {
                         this.drawAspectLine(planet1.longitude, planet2.longitude, aspect);
@@ -295,92 +402,40 @@ class NatalChart {
         }
     }
 
-    // Aspekt çizgisi
+    // Draw a single aspect line
     drawAspectLine(long1, long2, aspect) {
-        const ascendant = this.data.ascendant.degree;
+        // Convert longitudes to canvas angles
+        const angle1 = this.degreeToRadian(180 - long1);
+        const angle2 = this.degreeToRadian(180 - long2);
 
-        const angle1 = this.degreeToRadian(ascendant - long1);
-        const angle2 = this.degreeToRadian(ascendant - long2);
+        // Calculate points on the aspect zone circle
+        const x1 = this.centerX + Math.cos(angle1) * this.radii.aspectZone;
+        const y1 = this.centerY + Math.sin(angle1) * this.radii.aspectZone;
+        const x2 = this.centerX + Math.cos(angle2) * this.radii.aspectZone;
+        const y2 = this.centerY + Math.sin(angle2) * this.radii.aspectZone;
 
-        const x1 = this.centerX + Math.cos(angle1) * this.aspectRadius;
-        const y1 = this.centerY - Math.sin(angle1) * this.aspectRadius;
-        const x2 = this.centerX + Math.cos(angle2) * this.aspectRadius;
-        const y2 = this.centerY - Math.sin(angle2) * this.aspectRadius;
-
-        this.ctx.strokeStyle = aspect.color + '66'; // Şeffaf
-        this.ctx.lineWidth = aspect.angle === 0 || aspect.angle === 180 ? 2 : 1;
-
-        if (aspect.angle === 90 || aspect.angle === 180) {
-            this.ctx.setLineDash([5, 5]); // Kesikli çizgi
-        }
+        // Draw aspect line
+        this.ctx.strokeStyle = '#000000';
+        this.ctx.lineWidth = aspect.lineWidth;
+        this.ctx.globalAlpha = 0.3; // Make aspects semi-transparent
+        this.ctx.setLineDash(aspect.lineDash);
 
         this.ctx.beginPath();
         this.ctx.moveTo(x1, y1);
         this.ctx.lineTo(x2, y2);
         this.ctx.stroke();
+
         this.ctx.setLineDash([]);
+        this.ctx.globalAlpha = 1.0;
     }
 
-    // Açılar (Asc, MC)
-    drawAngles() {
-        const ascendant = this.data.ascendant.degree;
-
-        // Ascendant (Yükselen) - Sol
-        this.drawAngleMarker(0, 'ASC', '#FF6B6B');
-
-        // MC (Orta Göğü) - Üst
-        const mcRelative = this.data.mc.degree - ascendant;
-        this.drawAngleMarker(mcRelative, 'MC', '#4ECDC4');
-
-        // Descendant - Sağ
-        this.drawAngleMarker(180, 'DSC', '#FF6B6B');
-
-        // IC - Alt
-        this.drawAngleMarker(mcRelative - 180, 'IC', '#4ECDC4');
-    }
-
-    // Açı işaretçisi
-    drawAngleMarker(relativeDegree, label, color) {
-        const angle = this.degreeToRadian(-relativeDegree);
-        const x = this.centerX + Math.cos(angle) * (this.outerRadius + 20);
-        const y = this.centerY - Math.sin(angle) * (this.outerRadius + 20);
-
-        this.ctx.fillStyle = color;
-        this.ctx.font = 'bold 14px Arial';
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(label, x, y);
-    }
-
-    // Derece işaretleri
-    drawDegreeMarkers() {
-        const ascendant = this.data.ascendant.degree;
-
-        for (let deg = 0; deg < 360; deg += 30) {
-            const angle = this.degreeToRadian(ascendant - deg);
-
-            // Dış işaret
-            const x1 = this.centerX + Math.cos(angle) * this.zodiacRadius;
-            const y1 = this.centerY - Math.sin(angle) * this.zodiacRadius;
-            const x2 = this.centerX + Math.cos(angle) * (this.zodiacRadius + 10);
-            const y2 = this.centerY - Math.sin(angle) * (this.zodiacRadius + 10);
-
-            this.ctx.strokeStyle = '#333';
-            this.ctx.lineWidth = 2;
-            this.ctx.beginPath();
-            this.ctx.moveTo(x1, y1);
-            this.ctx.lineTo(x2, y2);
-            this.ctx.stroke();
-        }
-    }
-
-    // Derece to Radian (canvas için ters çevir)
+    // Convert degrees to radians for canvas
     degreeToRadian(degree) {
         return (degree * Math.PI) / 180;
     }
 }
 
-// Chart'ı çiz
+// Initialize and draw the chart
 function drawNatalChart(data) {
     const chartContainer = document.getElementById('chartContainer');
     chartContainer.innerHTML = '<canvas id="natalChartCanvas"></canvas>';
@@ -388,6 +443,6 @@ function drawNatalChart(data) {
     const chart = new NatalChart('natalChartCanvas', data);
     chart.draw();
 
-    // Chart'ı göster
+    // Display the chart
     chartContainer.style.display = 'block';
 }
