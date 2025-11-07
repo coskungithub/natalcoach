@@ -30,17 +30,19 @@
 
                     <div class="form-group">
                         <label for="latitude">Enlem (Latitude):</label>
-                        <input type="number" id="latitude" step="0.0001" placeholder="Örn: 41.0082" required>
+                        <input type="number" id="latitude" step="0.0001" min="-90" max="90" placeholder="Örn: 41.0082" required>
                     </div>
 
                     <div class="form-group">
                         <label for="longitude">Boylam (Longitude):</label>
-                        <input type="number" id="longitude" step="0.0001" placeholder="Örn: 28.9784" required>
+                        <input type="number" id="longitude" step="0.0001" min="-180" max="180" placeholder="Örn: 28.9784" required>
                     </div>
 
                     <div class="form-hint">
-                        <p>💡 İpucu: İstanbul için Enlem: 41.0082, Boylam: 28.9784</p>
-                        <p>📍 Şehir koordinatlarını <a href="https://www.latlong.net/" target="_blank">buradan</a> bulabilirsiniz</p>
+                        <p><strong>💡 Örnek Şehir Koordinatları:</strong></p>
+                        <p>İstanbul: 41.0082, 28.9784 | Ankara: 39.9334, 32.8597</p>
+                        <p>İzmir: 38.4237, 27.1428 | New York: 40.7128, -74.0060</p>
+                        <p>📍 Diğer şehirler için: <a href="https://www.latlong.net/" target="_blank">latlong.net</a></p>
                     </div>
 
                     <button type="submit" class="btn-calculate">Haritayı Hesapla</button>

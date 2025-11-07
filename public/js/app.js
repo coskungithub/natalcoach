@@ -7,6 +7,9 @@ document.getElementById('natalForm').addEventListener('submit', async (e) => {
     const latitude = parseFloat(document.getElementById('latitude').value);
     const longitude = parseFloat(document.getElementById('longitude').value);
 
+    // Debug: Koordinatları konsola yazdır
+    console.log('Gönderilen koordinatlar:', { latitude, longitude });
+
     // Tarih ve saati parçala
     const [year, month, day] = dateInput.split('-').map(Number);
     const [hour, minute] = timeInput.split(':').map(Number);
@@ -43,6 +46,9 @@ document.getElementById('natalForm').addEventListener('submit', async (e) => {
         if (!response.ok) {
             throw new Error(result.error || 'Bir hata oluştu');
         }
+
+        // Debug: API'den gelen sonuçları konsola yazdır
+        console.log('API Sonucu - ASC:', result.data.ascendant.degree, 'MC:', result.data.mc.degree);
 
         // Sonuçları göster
         displayResults(result.data);
