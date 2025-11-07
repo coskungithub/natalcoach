@@ -41,16 +41,18 @@
                     <div class="form-group">
                         <label for="timezone">Saat Dilimi (Timezone):</label>
                         <select id="timezone" required>
-                            <option value="-180">UTC+3 (Türkiye - Standart)</option>
-                            <option value="-240">UTC+4 (Türkiye - Yaz Saati Uygulandıysa)</option>
-                            <option value="-120">UTC+2 (Doğu Avrupa)</option>
-                            <option value="0">UTC+0 (Londra)</option>
-                            <option value="60">UTC-1</option>
-                            <option value="300">UTC-5 (New York - Standart)</option>
-                            <option value="240">UTC-4 (New York - Yaz Saati)</option>
-                            <option value="480">UTC-8 (Los Angeles - Standart)</option>
-                            <option value="420">UTC-7 (Los Angeles - Yaz Saati)</option>
-                            <option value="auto">Otomatik (Tarayıcı Tahmini)</option>
+                            <option value="Europe/Istanbul">🇹🇷 Türkiye (Europe/Istanbul)</option>
+                            <option value="Europe/Athens">🇬🇷 Yunanistan (Europe/Athens)</option>
+                            <option value="Europe/London">🇬🇧 Londra (Europe/London)</option>
+                            <option value="Europe/Paris">🇫🇷 Paris (Europe/Paris)</option>
+                            <option value="Europe/Berlin">🇩🇪 Berlin (Europe/Berlin)</option>
+                            <option value="Europe/Moscow">🇷🇺 Moskova (Europe/Moscow)</option>
+                            <option value="America/New_York">🇺🇸 New York (America/New_York)</option>
+                            <option value="America/Los_Angeles">🇺🇸 Los Angeles (America/Los_Angeles)</option>
+                            <option value="America/Chicago">🇺🇸 Chicago (America/Chicago)</option>
+                            <option value="Asia/Dubai">🇦🇪 Dubai (Asia/Dubai)</option>
+                            <option value="Asia/Tokyo">🇯🇵 Tokyo (Asia/Tokyo)</option>
+                            <option value="Australia/Sydney">🇦🇺 Sydney (Australia/Sydney)</option>
                         </select>
                     </div>
 
@@ -58,8 +60,9 @@
                         <p><strong>💡 Örnek Şehir Koordinatları:</strong></p>
                         <p>İstanbul: 41.0082, 28.9784 | Ankara: 39.9334, 32.8597</p>
                         <p>İzmir: 38.4237, 27.1428 | New York: 40.7128, -74.0060</p>
-                        <p><strong>⏰ Önemli:</strong> Türkiye'de 1996 öncesi yaz saati farklıydı. Doğum tarihinize göre doğru timezone'u seçin.</p>
-                        <p>📍 Koordinatlar: <a href="https://www.latlong.net/" target="_blank">latlong.net</a> | Timezone: <a href="https://www.timeanddate.com/time/zone/" target="_blank">timeanddate.com</a></p>
+                        <p><strong>⏰ Timezone Bilgisi:</strong> Sistem tarihe özgü yaz saati kurallarını otomatik uygular.</p>
+                        <p>Doğduğunuz şehrin timezone'unu seçin, yerel doğum saatinizi girin.</p>
+                        <p>📍 Koordinatlar: <a href="https://www.latlong.net/" target="_blank">latlong.net</a></p>
                     </div>
 
                     <button type="submit" class="btn-calculate">Haritayı Hesapla</button>
@@ -115,6 +118,8 @@
         </div>
     </div>
 
+    <!-- Luxon for timezone handling -->
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
     <script src="js/chart.js"></script>
     <script src="js/app.js"></script>
 </body>

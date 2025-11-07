@@ -20,21 +20,29 @@ document.getElementById('natalForm').addEventListener('submit', async (e) => {
     hideResults();
 
     try {
-        // Timezone seçimini al
-        const timezoneSelect = document.getElementById('timezone').value;
-        let timezoneOffset;
+        // Timezone seçimini al (IANA timezone string)
+        const timezoneString = document.getElementById('timezone').value;
 
-        if (timezoneSelect === 'auto') {
-            // Otomatik: DOĞUM TARİHİ için offset hesapla
-            // Bu, daylight saving time gibi tarihsel farklılıkları dikkate alır
-            const birthDate = new Date(year, month - 1, day, hour, minute);
-            timezoneOffset = birthDate.getTimezoneOffset();
-            console.log('Otomatik timezone offset (doğum tarihi için):', timezoneOffset, 'dakika');
-        } else {
-            // Manuel seçim
-            timezoneOffset = parseInt(timezoneSelect);
-            console.log('Manuel timezone offset:', timezoneOffset, 'dakika');
-        }
+        // Luxon ile tarihe özgü timezone offset hesapla
+        const { DateTime } = luxon;
+        const localDateTime = DateTime.fromObject({
+            year: year,
+            month: month,
+            day: day,
+            hour: hour,
+            minute: minute
+        }, { zone: timezoneString });
+
+        // UTC'ye çevir
+        const utcDateTime = localDateTime.toUTC();
+
+        // Offset'i dakika cinsinden hesapla
+        const timezoneOffset = localDateTime.offset;
+
+        console.log('Timezone:', timezoneString);
+        console.log('Yerel zaman:', localDateTime.toISO());
+        console.log('UTC zaman:', utcDateTime.toISO());
+        console.log('Offset (dakika):', -timezoneOffset); // Ters işaret: UTC+3 = -180
 
         // API çağrısı
         const response = await fetch('http://localhost:3000/api/natal-chart', {
@@ -50,7 +58,7 @@ document.getElementById('natalForm').addEventListener('submit', async (e) => {
                 minute,
                 latitude,
                 longitude,
-                timezoneOffset
+                timezoneOffset: -timezoneOffset  // Ters işaret: Luxon +180 → API -180
             })
         });
 
